@@ -1,21 +1,32 @@
 import pickle
+import pandas as pd
+import numpy as np
 
 def load_models():
+    """
+    Load trained machine learning models from pickle files.
+    
+    Returns:
+    - List of loaded models [Random Forest, Gradient Boosting, Logistic Regression]
+    """
     try:
-        # Load models from pickle files
+        # Load models
         with open('models/random_forest.pkl', 'rb') as rf_file:
             rf_model = pickle.load(rf_file)
         with open('models/gradient_boosting.pkl', 'rb') as gb_file:
             gb_model = pickle.load(gb_file)
-        with open('models/another_model.pkl', 'rb') as am_file:  # Add your new model here
-            am_model = pickle.load(am_file)
-        return [rf_model, gb_model, am_model]
+        with open('models/logistic_regression.pkl', 'rb') as lr_file:  # Updated to Logistic Regression
+            lr_model = pickle.load(lr_file)
+        
+        print("Models loaded successfully.")
+        return [rf_model, gb_model, lr_model]
+    
+    except FileNotFoundError as e:
+        print(f"Error: Model file not found - {e}")
+        return []
     except Exception as e:
         print(f"Error loading models: {e}")
         return []
-    
-import pandas as pd
-import numpy as np
 
 def preprocess_input(data):
     """
@@ -27,15 +38,20 @@ def preprocess_input(data):
     Returns:
     - pd.DataFrame: Preprocessed features in a DataFrame.
     """
-    # Extract features from the input data
-    age = float(data['age'])
-    bmi = float(data['bmi'])
-    glucose = float(data['glucose'])
+    try:
+        # Extract features from the input data
+        age = float(data['age'])
+        bmi = float(data['bmi'])
+        glucose = float(data['glucose'])
 
-    # Create a DataFrame to match the expected input format for the model
-    features = pd.DataFrame([[age, bmi, glucose]], columns=['Age', 'BMI', 'Glucose'])
+        # Create a DataFrame to match the expected input format for the model
+        features = pd.DataFrame([[age, bmi, glucose]], columns=['Age', 'BMI', 'Glucose'])
 
-    # Example: You can add more preprocessing steps here like scaling, encoding, etc.
-    # For now, let's return the features as-is.
-
-    return features
+        return features
+    
+    except KeyError as e:
+        print(f"Error: Missing key in input data - {e}")
+        return None
+    except ValueError as e:
+        print(f"Error: Invalid value in input data - {e}")
+        return None
